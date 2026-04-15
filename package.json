@@ -2,23 +2,29 @@
   "name": "grocify",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "db:push": "drizzle-kit push --config drizzle.config.ts",
+    "seed": "tsx ./scripts/seed.ts"
   },
   "dependencies": {
     "@clerk/expo": "^3.1.10",
     "@expo-google-fonts/roboto": "^0.4.3",
     "@expo-google-fonts/source-code-pro": "^0.4.1",
     "@expo/vector-icons": "^15.0.3",
+    "@neondatabase/serverless": "^1.0.2",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "babel-preset-expo": "^55.0.17",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
     "expo": "~54.0.33",
     "expo-auth-session": "~7.0.10",
     "expo-constants": "~18.0.13",
@@ -50,8 +56,10 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.2"
   },
   "private": true
