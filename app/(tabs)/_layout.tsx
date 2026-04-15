@@ -3,9 +3,11 @@ import { useAuth } from "@clerk/expo";
 import { FontAwesome5, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, useColorScheme, View } from "react-native";
 
 export default function HomeLayout() {
+	
+	
 	const { isLoaded } = useAuth();
 
 	if (!isLoaded) {
@@ -16,8 +18,9 @@ export default function HomeLayout() {
 		);
 	}
 
+	
 	return (
-		<Tabs tabBar={(props) => <TabBar {...props} />}>
+		<Tabs tabBar={(props) => <TabBar {...props} />} >
 			<Tabs.Screen
 				name="index"
 				options={{

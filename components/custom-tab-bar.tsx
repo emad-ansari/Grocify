@@ -2,18 +2,24 @@ import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { PlatformPressable } from "@react-navigation/elements";
 import { useLinkBuilder } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
-import { Animated, LayoutChangeEvent, Text, View } from "react-native";
+import {
+	Animated,
+	LayoutChangeEvent,
+	Text,
+	useColorScheme,
+	View,
+} from "react-native";
 
 export default function TabBar({
 	state,
 	descriptors,
 	navigation,
 }: BottomTabBarProps) {
+	const colorScheme = useColorScheme();
+	const isDark = colorScheme === "dark";
 	const { buildHref } = useLinkBuilder();
 	const [tabBarWidth, setTabBarWidth] = useState(0);
 	const translateX = useRef(new Animated.Value(0)).current;
-
-	console.log("translate x value: ", translateX);
 
 	const tabWidth = tabBarWidth / state.routes.length;
 
@@ -33,8 +39,10 @@ export default function TabBar({
 		}).start();
 	}, [state.index, tabWidth]);
 
+	const tabTintColor = isDark ? "hsl(142 70% 54%)" : "hsl(147  75% 33%)";
+
 	return (
-		<View className="absolute bottom-8  mx-20 items-center flex-row justify-between  bg-card  dark:bg-card/20 border border-border px-2 py-2 rounded-full ">
+		<View className="absolute bottom-8  mx-20 items-center flex-row justify-between  bg-white  dark:bg-card/20  px-1 py-1 rounded-full ">
 			<View
 				className="relative flex-row items-center justify-between"
 				onLayout={onLayout}
@@ -45,7 +53,7 @@ export default function TabBar({
 							position: "absolute",
 							width: tabWidth, // 🔥 pixel width
 							height: "100%",
-							backgroundColor: "rgba(74, 222, 128, 0.15)",
+							backgroundColor: `${isDark ? "rgba(74, 222, 128, 0.15)" : "#e5e7eb"}`,
 							borderRadius: 999,
 							transform: [{ translateX }], // 🔥 plain pixel value, no interpolation needed
 						}}
@@ -94,12 +102,12 @@ export default function TabBar({
 							{/* ICON */}
 							{options.tabBarIcon?.({
 								focused: isFocused,
-								color: isFocused ? "#4ade80" : "#cbd5e1",
+								color: isFocused ? tabTintColor : (isDark ? "#fff" : "#000"),
 								size: 24,
 							})}
 
 							<Text
-								className={`text-xs mt-1 ${isFocused ? "text-primary" : "text-white"}`}
+								className={`text-xs mt-1 ${isFocused ? (isDark ? "text-[#4ADE80]" : "text-[#15803D]") : isDark ? "text-white" : "text-black"}`}
 							>
 								{label}
 							</Text>

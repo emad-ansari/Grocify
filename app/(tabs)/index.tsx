@@ -1,52 +1,15 @@
-import { Show, useClerk, useUser } from "@clerk/expo";
-import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-	const { user } = useUser();
-	const { signOut } = useClerk();
-
 	return (
-		<SafeAreaView className="flex-1 bg-primary dark:bg-secondary" edges={["top"]}>
-			<View style={styles.container}>
-				<Text style={styles.title}>Welcome!</Text>
-				<Show when="signed-out">
-					<Link href="/(auth)/sign-in">
-						<Text>Sign in</Text>
-					</Link>
-				</Show>
-				<Show when="signed-in">
-					<Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
-					<Pressable style={styles.button} onPress={() => signOut()}>
-						<Text style={styles.buttonText}>Sign out</Text>
-					</Pressable>
-				</Show>
+		<SafeAreaView
+			className="flex-1 bg-primary dark:bg-secondary"
+			edges={["top"]}
+		>
+			<View>
+				<Text>home screen</Text>
 			</View>
 		</SafeAreaView>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		padding: 20,
-		paddingTop: 60,
-		gap: 16,
-	},
-	title: {
-		fontSize: 24,
-		fontWeight: "bold",
-	},
-	button: {
-		backgroundColor: "#0a7ea4",
-		paddingVertical: 12,
-		paddingHorizontal: 24,
-		borderRadius: 8,
-		alignItems: "center",
-	},
-	buttonText: {
-		color: "#fff",
-		fontWeight: "600",
-	},
-});
