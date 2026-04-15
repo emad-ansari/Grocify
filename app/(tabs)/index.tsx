@@ -1,26 +1,29 @@
 import { Show, useClerk, useUser } from "@clerk/expo";
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
 	const { user } = useUser();
 	const { signOut } = useClerk();
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.title}>Welcome!</Text>
-			<Show when="signed-out">
-				<Link href="/(auth)/sign-in">
-					<Text>Sign in</Text>
-				</Link>
-			</Show>
-			<Show when="signed-in">
-				<Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
-				<Pressable style={styles.button} onPress={() => signOut()}>
-					<Text style={styles.buttonText}>Sign out</Text>
-				</Pressable>
-			</Show>
-		</View>
+		<SafeAreaView className="flex-1 bg-primary dark:bg-secondary" edges={["top"]}>
+			<View style={styles.container}>
+				<Text style={styles.title}>Welcome!</Text>
+				<Show when="signed-out">
+					<Link href="/(auth)/sign-in">
+						<Text>Sign in</Text>
+					</Link>
+				</Show>
+				<Show when="signed-in">
+					<Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
+					<Pressable style={styles.button} onPress={() => signOut()}>
+						<Text style={styles.buttonText}>Sign out</Text>
+					</Pressable>
+				</Show>
+			</View>
+		</SafeAreaView>
 	);
 }
 

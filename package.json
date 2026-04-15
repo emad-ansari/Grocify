@@ -2,7 +2,7 @@
   "name": "grocify",
   "main": "expo-router/entry",
   "version": "1.0.0",
-  "type": "module",
+  
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -27,6 +27,7 @@
     "drizzle-orm": "^0.45.2",
     "expo": "~54.0.33",
     "expo-auth-session": "~7.0.10",
+    "expo-blur": "~15.0.8",
     "expo-constants": "~18.0.13",
     "expo-crypto": "~15.0.8",
     "expo-dev-client": "~6.0.20",
