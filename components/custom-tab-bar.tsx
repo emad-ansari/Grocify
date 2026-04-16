@@ -42,7 +42,7 @@ export default function TabBar({
 	const tabTintColor = isDark ? "hsl(142 70% 54%)" : "hsl(147  75% 33%)";
 
 	return (
-		<View className="absolute bottom-8  mx-20 items-center flex-row justify-between  bg-white  dark:bg-card/20  px-1 py-1 rounded-full ">
+		<View className="absolute bottom-8  mx-20 items-center flex-row justify-between  bg-white  dark:bg-card border border-border  px-1 py-1 rounded-full ">
 			<View
 				className="relative flex-row items-center justify-between"
 				onLayout={onLayout}

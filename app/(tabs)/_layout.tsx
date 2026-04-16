@@ -1,14 +1,21 @@
 import TabBar from "@/components/custom-tab-bar";
+import { useGroceryStore } from "@/store/grocery-store";
 import { useAuth } from "@clerk/expo";
 import { FontAwesome5, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { useEffect } from "react";
 
-import { ActivityIndicator, useColorScheme, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 export default function HomeLayout() {
-	
-	
 	const { isLoaded } = useAuth();
+
+	const { loadItems } = useGroceryStore();
+
+	useEffect(() => {
+		loadItems();
+
+	}, [])
 
 	if (!isLoaded) {
 		return (
@@ -18,9 +25,8 @@ export default function HomeLayout() {
 		);
 	}
 
-	
 	return (
-		<Tabs tabBar={(props) => <TabBar {...props} />} >
+		<Tabs tabBar={(props) => <TabBar {...props} />}>
 			<Tabs.Screen
 				name="index"
 				options={{

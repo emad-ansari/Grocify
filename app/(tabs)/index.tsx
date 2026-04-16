@@ -1,15 +1,49 @@
-import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import CompletedItems from "@/components/list/completed-items";
+import ListHeroCard from "@/components/list/list-hero-card";
+import PendingItemCard from "@/components/list/pending-item-card";
+import TabScreenBackground from "@/components/TabScreenBackground";
+import { useGroceryStore } from "@/store/grocery-store";
+import { FontAwesome6 } from "@expo/vector-icons";
+import { FlatList, Text, View } from "react-native";
 
-export default function HomeScreen() {
+export default function ListScreen() {
+	const { items } = useGroceryStore();
+	const pendingItems = items.filter((item) => !item.purchased);
+
 	return (
-		<SafeAreaView
-			className="flex-1 bg-primary dark:bg-secondary"
-			edges={["top"]}
-		>
-			<View>
-				<Text>home screen</Text>
-			</View>
-		</SafeAreaView>
+
+		<FlatList
+			className="flex-1 bg-background px-5 pt-10"
+			data={pendingItems}
+			keyExtractor={(item) => item.id}
+			renderItem={({ item }) => (
+				<PendingItemCard key={item.id} item={item} />
+			)}
+			contentContainerStyle={{ gap: 14, paddingBottom: 135 }}
+			contentInsetAdjustmentBehavior="automatic"
+			ListEmptyComponent={
+				<View className="flex items-center justify-center border border-border  p-6 rounded-3xl ">
+					<FontAwesome6 name = "box-open" size = {50} color = "#4b8162"/>
+					<Text className="text-lg font-semibold text-muted-foreground/75 mt-1 tracking-wide uppercase">No Pending Item yet</Text>
+
+				</View>
+			}
+			ListHeaderComponent={
+				<View style={{ gap: 14 }}>
+					<TabScreenBackground />
+					<ListHeroCard />
+
+					<View className="flex-row items-center justify-between px-1">
+						<Text className="text-sm font-semibold uppercase tracking-[1px] text-muted-foreground">
+							Shopping items
+						</Text>
+						<Text className="text-sm  text-muted-foreground">
+							{pendingItems.length} active
+						</Text>
+					</View>
+				</View>
+			}
+			ListFooterComponent={<CompletedItems />}
+		/>
 	);
 }
