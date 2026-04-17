@@ -4,10 +4,10 @@ import React from "react";
 import { Pressable, Text, View } from "react-native";
 
 const CompletedItems = () => {
-	const { removeItem, togglePurchased, items } = useGroceryStore();
+	const { removeItem, togglePurchased, items, isLoading } = useGroceryStore();
 	const completedItems = items.filter((item) => item.purchased);
 
-	if (!completedItems.length) return null;
+	if (!completedItems.length || isLoading) return null;
 
 
 
