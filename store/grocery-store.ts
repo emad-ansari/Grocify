@@ -5,7 +5,8 @@ export type GroceryCategory =
 	| "Dairy"
 	| "Bakery"
 	| "Pantry"
-	| "Snacks";
+	| "Snacks"
+	| "Meat"
 export type GroceryPriority = "low" | "medium" | "high";
 
 export interface GroceryItem {
@@ -180,7 +181,7 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 		}
 	},
 	clearPurchased: async () => {
-		set({ error: null });
+		set({ error: null, isLoading: true });
 
 		try {
 			const res = await fetch("/api/items/clear-purchased", {
@@ -195,6 +196,8 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 		} catch (error) {
 			console.error(`Error clearing purchased: ${error}`);
 			set({ error: "Something went wrong" });
+		} finally {
+			set({ isLoading: false });
 		}
 	},
 }));

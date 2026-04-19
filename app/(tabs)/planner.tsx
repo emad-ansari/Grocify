@@ -21,7 +21,7 @@ export default function PlannerScreen() {
 	return (
 		<KeyboardAwareScrollView
 			className="flex-1 bg-background pt-10 px-5"
-			contentContainerStyle={{ flexGrow: 1, paddingBottom: 135, gap: 14 }}
+			contentContainerStyle={{ flexGrow: 1, paddingBottom: 135, gap: 14,	paddingTop: 10 }}
 			showsVerticalScrollIndicator={false}
 			keyboardShouldPersistTaps="handled"
 			enableOnAndroid={true}

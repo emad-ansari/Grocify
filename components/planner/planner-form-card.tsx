@@ -19,6 +19,7 @@ const categories: GroceryCategory[] = [
 	"Bakery",
 	"Pantry",
 	"Snacks",
+	"Meat"
 ];
 const priorities: GroceryPriority[] = ["low", "medium", "high"];
 
@@ -28,6 +29,7 @@ const categoryIcons = {
 	Bakery: "bread-slice",
 	Pantry: "box-open",
 	Snacks: "cookie-bite",
+	Meat: "drumstick-bite"
 };
 
 const PlannerFormCard = () => {
