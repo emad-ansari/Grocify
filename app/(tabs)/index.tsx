@@ -4,27 +4,50 @@ import PendingItemCard from "@/components/list/pending-item-card";
 import TabScreenBackground from "@/components/TabScreenBackground";
 import { useGroceryStore } from "@/store/grocery-store";
 import { FontAwesome6 } from "@expo/vector-icons";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { useState } from "react";
+import {
+	ActivityIndicator,
+	FlatList,
+	RefreshControl,
+	Text,
+	View,
+} from "react-native";
 
 export default function ListScreen() {
-	const { items, isLoading } = useGroceryStore();
+	const { items, loadItems, isLoading } = useGroceryStore();
 	const pendingItems = items.filter((item) => !item.purchased);
+	const [refreshing, setIsRefreshing] = useState<boolean>(false);
+
+	const onRefresh = async () => {
+		setIsRefreshing(true);
+		await loadItems();
+		setIsRefreshing(false);
+	};
 
 	return (
 		<FlatList
 			className="flex-1 bg-background px-5 pt-10"
 			data={pendingItems}
 			keyExtractor={(item) => item.id}
+			refreshControl={
+				<RefreshControl
+					refreshing={refreshing}
+					onRefresh={onRefresh}
+					colors={["#4b8162"]}
+				/>
+			}
 			renderItem={({ item }) => (
 				<PendingItemCard key={item.id} item={item} />
 			)}
 			contentContainerStyle={{ gap: 14, paddingBottom: 135 }}
 			contentInsetAdjustmentBehavior="automatic"
 			ListEmptyComponent={
-				true ? (
+				isLoading ? (
 					<View className="flex items-center justify-center p-6">
 						<ActivityIndicator size="large" color="#4b8162" />
-						<Text className="text-lg text-secondary-foreground">Loading Pending Items...</Text>
+						<Text className="text-lg text-secondary-foreground">
+							Loading Pending Items...
+						</Text>
 					</View>
 				) : (
 					<View className="flex items-center justify-center border border-border  p-6 rounded-3xl ">
