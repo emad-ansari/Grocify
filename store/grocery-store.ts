@@ -109,8 +109,19 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 		}
 	},
 	updateQuantity: async (id, quantity, token) => {
-		set({ error: null });
+		let previousItems: GroceryItem[] = [];
+
 		const nextQuantity = Math.max(1, quantity);
+		set((state) => {
+			previousItems = [...state.items];
+			return {
+				...state,
+				error: null,
+				items: state.items.map((item) =>
+					item.id === id ? { ...item, quantity: nextQuantity } : item,
+				),
+			};
+		});
 
 		try {
 			const res = await fetch(`/api/items/${id}`, {
@@ -122,29 +133,41 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 				body: JSON.stringify({ quantity: nextQuantity }),
 			});
 
-			const payload = (await res.json()) as ItemResponse;
 			if (!res.ok) {
 				throw new Error(
 					`Request failed with status code ${res.status}`,
 				);
 			}
-
-			set((state) => ({
-				items: state.items.map((item) =>
-					item.id === id ? payload.item : item,
-				),
-			}));
 		} catch (error) {
 			console.error(`Error updating quantity: ${error}`);
-			set({ error: "Something went wrong" });
+			set((state) => {
+				return {
+					...state,
+					error: "Failed to update quantity",
+					items: previousItems,
+				};
+			});
 		}
 	},
 	togglePurchased: async (id, token: string) => {
+		let previousItems: GroceryItem[] = [];
 		const currentItem = get().items.find((item) => item.id === id);
 		if (!currentItem) return;
 
 		const nextPurchased = !currentItem.purchased;
-		set({ error: null });
+
+		set((state) => {
+			previousItems = [...state.items];
+			return {
+				...state,
+				error: null,
+				items: state.items.map((item) =>
+					item.id === id
+						? { ...item, purchased: nextPurchased }
+						: item,
+				),
+			};
+		});
 
 		try {
 			const res = await fetch(`/api/items/${id}`, {
@@ -156,25 +179,33 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 				body: JSON.stringify({ purchased: nextPurchased }),
 			});
 
-			const payload = (await res.json()) as ItemResponse;
 			if (!res.ok) {
 				throw new Error(
 					`Request failed with status code ${res.status}`,
 				);
 			}
-
-			set((state) => ({
-				items: state.items.map((item) =>
-					item.id === id ? payload.item : item,
-				),
-			}));
 		} catch (error) {
 			console.error(`Error toggling purchased: ${error}`);
-			set({ error: "Something went wrong" });
+			set((state) => {
+				return {
+					...state,
+					error: "Failed to updated purchased status",
+					items: previousItems,
+				};
+			});
 		}
 	},
 	removeItem: async (id, token: string) => {
-		set({ error: null });
+		let previousItems: GroceryItem[] = [];
+		set((state) => {
+			previousItems = [...state.items];
+			return {
+				...state,
+				error: null,
+				isLoading: true,
+				items: state.items.filter((item) => item.id !== id),
+			};
+		});
 
 		try {
 			const res = await fetch(`/api/items/${id}`, {
@@ -189,17 +220,31 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 					`Request failed with status code ${res.status}`,
 				);
 			}
-
-			set((state) => ({
-				items: state.items.filter((item) => item.id !== id),
-			}));
 		} catch (error) {
 			console.error(`Error removing item: ${error}`);
-			set({ error: "Something went wrong" });
+			set((state) => {
+				return {
+					...state,
+					error: "Failed to remove item",
+					items: previousItems,
+				};
+			});
+		} finally {
+			set({ isLoading: false });
 		}
 	},
 	clearPurchased: async (token: string) => {
-		set({ error: null, isLoading: true });
+		let previousItems: GroceryItem[] = [];
+
+		set((state) => {
+			previousItems = [...state.items];
+			return {
+				...state,
+				error: null,
+				isLoading: true,
+				items: state.items.filter((item) => !item.purchased),
+			};
+		});
 
 		try {
 			const res = await fetch("/api/items/clear-purchased", {
@@ -212,11 +257,16 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 			if (!res.ok) {
 				throw new Error(`Request failed (${res.status})`);
 			}
-			const items = get().items.filter((item) => !item.purchased);
-			set({ items });
 		} catch (error) {
 			console.error(`Error clearing purchased: ${error}`);
-			set({ error: "Something went wrong" });
+			set((state) => {
+				return {
+					...state,
+					error: null,
+					isLoading: false,
+					items: previousItems,
+				};
+			});
 		} finally {
 			set({ isLoading: false });
 		}

@@ -2,7 +2,7 @@ import { useGroceryStore } from "@/store/grocery-store";
 import { useAuth } from "@clerk/expo";
 import { FontAwesome6 } from "@expo/vector-icons";
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 const CompletedItems = () => {
 	const { getToken } = useAuth();
@@ -56,7 +56,14 @@ const CompletedItems = () => {
 						className="w-8 h-8 items-center justify-center rounded-xl bg-destructive"
 						onPress={() => onPress("remove_item", item.id)}
 					>
-						<FontAwesome6 name="trash" size={12} color="#d45f58" />
+						{
+							isLoading ? (
+								<ActivityIndicator size = "small" color = "#d45f58"/>
+							) : (
+								<FontAwesome6 name="trash" size={12} color="#d45f58" />
+							)
+						}
+						
 					</Pressable>
 				</View>
 			))}

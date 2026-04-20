@@ -18,8 +18,6 @@ export async function GET(req: Request) {
 			);
 		}
 
-		console.log("request came here", userId);
-
 		const items = await listGroceryItems(userId);
 
 		return Response.json({ items }, { status: 200 });
@@ -36,9 +34,8 @@ export async function GET(req: Request) {
 export async function POST(request: Request) {
 	try {
 		const requestState = await clerk.authenticateRequest(request);
-		console.log('request state: ', requestState);
+
 		const userId = requestState.toAuth()?.userId;
-		console.log('user Id: ', userId);
 		if (!userId) {
 			return Response.json(
 				{ error: "UnAuthorized Access!!" },
