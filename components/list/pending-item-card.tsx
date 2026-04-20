@@ -1,4 +1,5 @@
 import { GroceryItem, useGroceryStore } from "@/store/grocery-store";
+import { useAuth } from "@clerk/expo";
 import { FontAwesome6 } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -16,14 +17,44 @@ const priorityPillText = {
 };
 
 const PendingItemCard = ({ item }: { item: GroceryItem }) => {
+	const { getToken } = useAuth();
 	const { removeItem, updateQuantity, togglePurchased } = useGroceryStore();
+
+	const onPress = async (
+		operation:
+			| "decrease_quantity"
+			| "increase_quantity"
+			| "toggle_purchased"
+			| "remove_item",
+	) => {
+		const token = await getToken();
+		if (!token) return;
+
+		if (operation === "increase_quantity") {
+			await updateQuantity(
+				item.id,
+				Math.max(1, item.quantity + 1),
+				token,
+			);
+		} else if (operation === "decrease_quantity") {
+			await updateQuantity(
+				item.id,
+				Math.max(1, item.quantity - 1),
+				token,
+			);
+		} else if (operation === "toggle_purchased") {
+			await togglePurchased(item.id, token);
+		} else {
+			await removeItem(item.id, token);
+		}
+	};
 
 	return (
 		<View className="rounded-3xl border border-border bg-card p-4">
 			<View className="flex-row items-start gap-3">
 				<Pressable
 					className="mt-1 size-6 items-center justify-center rounded-full border-2 border-border bg-card"
-					onPress={() => togglePurchased(item.id)}
+					onPress={() => onPress("toggle_purchased")}
 				></Pressable>
 
 				<View className="flex-1 ">
@@ -53,12 +84,7 @@ const PendingItemCard = ({ item }: { item: GroceryItem }) => {
 					<View className="mt-3 flex-row items-center gap-2">
 						<Pressable
 							className="w-8 h-8 items-center justify-center rounded-xl border border-border bg-muted"
-							onPress={() =>
-								updateQuantity(
-									item.id,
-									Math.max(1, item.quantity - 1),
-								)
-							}
+							onPress={() => onPress("decrease_quantity")}
 						>
 							<FontAwesome6
 								name="minus"
@@ -73,12 +99,7 @@ const PendingItemCard = ({ item }: { item: GroceryItem }) => {
 
 						<Pressable
 							className="w-8 h-8 items-center justify-center rounded-xl border border-border bg-muted"
-							onPress={() =>
-								updateQuantity(
-									item.id,
-									Math.max(1, item.quantity + 1),
-								)
-							}
+							onPress={() => onPress("increase_quantity")}
 						>
 							<FontAwesome6
 								name="plus"
@@ -91,7 +112,7 @@ const PendingItemCard = ({ item }: { item: GroceryItem }) => {
 
 				<Pressable
 					className="w-9 h-9 items-center justify-center rounded-xl bg-destructive"
-					onPress={() => removeItem(item.id)}
+					onPress={() => onPress("remove_item")}
 				>
 					<FontAwesome6 name="trash" size={13} color="#d45f58" />
 				</Pressable>

@@ -1,9 +1,26 @@
 import { createGroceryItem, listGroceryItems } from "@/lib/server/db-actions";
+import { createClerkClient } from "@clerk/backend";
+
+export const clerk = createClerkClient({
+	secretKey: process.env.CLERK_SECRET_KEY!,
+	publishableKey: process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!,
+});
 
 // Get All Grocery Item
-export async function GET() {
+export async function GET(req: Request) {
 	try {
-		const items = await listGroceryItems();
+		const requestState = await clerk.authenticateRequest(req);
+		const userId = requestState.toAuth()?.userId;
+		if (!userId) {
+			return Response.json(
+				{ error: "UnAuthorized Access!!" },
+				{ status: 401 },
+			);
+		}
+
+		console.log("request came here", userId);
+
+		const items = await listGroceryItems(userId);
 
 		return Response.json({ items }, { status: 200 });
 	} catch (error) {
@@ -18,6 +35,16 @@ export async function GET() {
 // Create New Item.
 export async function POST(request: Request) {
 	try {
+		const requestState = await clerk.authenticateRequest(request);
+		console.log('request state: ', requestState);
+		const userId = requestState.toAuth()?.userId;
+		console.log('user Id: ', userId);
+		if (!userId) {
+			return Response.json(
+				{ error: "UnAuthorized Access!!" },
+				{ status: 401 },
+			);
+		}
 		const body = await request.json();
 		const { name, category, quantity, priority } = body;
 
@@ -32,12 +59,15 @@ export async function POST(request: Request) {
 			category,
 			quantity,
 			priority,
+			userId,
 		});
 
 		return Response.json({ item }, { status: 201 });
 	} catch (error) {
 		const message =
-			error instanceof Error ? error.message : "Failed to create new item";
+			error instanceof Error
+				? error.message
+				: "Failed to create new item";
 
 		console.error("Failed to create new item: ", error);
 		return Response.json({ error: message }, { status: 500 });

@@ -3,6 +3,7 @@ import {
 	GroceryPriority,
 	useGroceryStore,
 } from "@/store/grocery-store";
+import { useAuth } from "@clerk/expo";
 import { FontAwesome6 } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -19,7 +20,7 @@ const categories: GroceryCategory[] = [
 	"Bakery",
 	"Pantry",
 	"Snacks",
-	"Meat"
+	"Meat",
 ];
 const priorities: GroceryPriority[] = ["low", "medium", "high"];
 
@@ -29,10 +30,11 @@ const categoryIcons = {
 	Bakery: "bread-slice",
 	Pantry: "box-open",
 	Snacks: "cookie-bite",
-	Meat: "drumstick-bite"
+	Meat: "drumstick-bite",
 };
 
 const PlannerFormCard = () => {
+	const { getToken } = useAuth();
 	const { error, addItem, isLoading } = useGroceryStore();
 
 	const [name, setName] = useState<string>("");
@@ -47,12 +49,18 @@ const PlannerFormCard = () => {
 	const canCreate = name.trim().length > 0;
 
 	const createItem = async () => {
-		await addItem({
-			name: name.trim(),
-			category,
-			priority,
-			quantity: Number(quantity),
-		});
+		const token = await getToken();
+		if (!token) return;
+
+		await addItem(
+			{
+				name: name.trim(),
+				category,
+				priority,
+				quantity: Number(quantity),
+			},
+			token,
+		);
 
 		setName("");
 		setQuantity("");
@@ -159,7 +167,7 @@ const PlannerFormCard = () => {
 			<Pressable
 				className={`mt-5 flex-row items-center justify-center rounded-2xl py-3 ${canCreate ? "bg-primary" : "bg-muted"}`}
 				onPress={createItem}
-                disabled = {!canCreate}
+				disabled={!canCreate}
 			>
 				{isLoading ? (
 					<>
@@ -186,13 +194,13 @@ const PlannerFormCard = () => {
 				)}
 			</Pressable>
 
-            {
-                error && (
-                    <View className = "mt-3 rounded-2xl border border-destructive bg-destructive px-3 py-2">
-                        <Text className="text-sm text-destructive-foreground text-center uppercase">hello</Text>
-                    </View>
-                )
-            }
+			{error && (
+				<View className="mt-3 rounded-2xl border border-destructive bg-destructive px-3 py-2">
+					<Text className="text-sm text-destructive-foreground text-center uppercase">
+						hello
+					</Text>
+				</View>
+			)}
 		</View>
 	);
 };

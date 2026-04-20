@@ -3,6 +3,7 @@ import ListHeroCard from "@/components/list/list-hero-card";
 import PendingItemCard from "@/components/list/pending-item-card";
 import TabScreenBackground from "@/components/TabScreenBackground";
 import { useGroceryStore } from "@/store/grocery-store";
+import { useAuth } from "@clerk/expo";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useState } from "react";
 import {
@@ -14,21 +15,30 @@ import {
 } from "react-native";
 
 export default function ListScreen() {
+	const { getToken } = useAuth();
 	const { items, loadItems, isLoading } = useGroceryStore();
 	const pendingItems = items.filter((item) => !item.purchased);
 	const [refreshing, setIsRefreshing] = useState<boolean>(false);
 
 	const onRefresh = async () => {
-		setIsRefreshing(true);
-		await loadItems();
-		setIsRefreshing(false);
+		const fetchItems = async () => {
+			setIsRefreshing(true);
+			const token = await getToken();
+			if (!token) return;
+
+			await loadItems(token);
+			setIsRefreshing(false);
+		};
+		
+		fetchItems();
 	};
 
 	return (
 		<FlatList
 			className="flex-1 bg-background px-5 pt-10"
-			data={pendingItems}
 			keyExtractor={(item) => item.id}
+			data={pendingItems}
+			contentContainerStyle={{ gap: 14, paddingBottom: 115 }}
 			refreshControl={
 				<RefreshControl
 					refreshing={refreshing}
@@ -39,7 +49,6 @@ export default function ListScreen() {
 			renderItem={({ item }) => (
 				<PendingItemCard key={item.id} item={item} />
 			)}
-			contentContainerStyle={{ gap: 14, paddingBottom: 135 }}
 			contentInsetAdjustmentBehavior="automatic"
 			ListEmptyComponent={
 				isLoading ? (

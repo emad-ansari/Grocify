@@ -1,6 +1,7 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { PlatformPressable } from "@react-navigation/elements";
 import { useLinkBuilder } from "@react-navigation/native";
+import { BlurView } from "expo-blur";
 import { useEffect, useRef, useState } from "react";
 import {
 	Animated,
@@ -40,9 +41,15 @@ export default function TabBar({
 	}, [state.index, tabWidth]);
 
 	const tabTintColor = isDark ? "hsl(142 70% 54%)" : "hsl(147  75% 33%)";
+	const glassBackground = isDark
+		? "#2a4032" // dark green glass
+		: "rgba(255, 255, 255, 0.7)"; // light glass
+
+	const borderColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
 
 	return (
-		<View className="absolute bottom-8  mx-20 items-center flex-row justify-between  bg-white  dark:bg-card border border-border  px-1 py-1 rounded-full ">
+		<View className="absolute bottom-5  mx-20 items-center flex-row justify-between    px-1 py-1 rounded-full bg-white dark:bg-card/90  overflow-hidden z-50 shadow-sm">
+
 			<View
 				className="relative flex-row items-center justify-between"
 				onLayout={onLayout}
@@ -102,7 +109,11 @@ export default function TabBar({
 							{/* ICON */}
 							{options.tabBarIcon?.({
 								focused: isFocused,
-								color: isFocused ? tabTintColor : (isDark ? "#fff" : "#000"),
+								color: isFocused
+									? tabTintColor
+									: isDark
+										? "#fff"
+										: "#000",
 								size: 24,
 							})}
 

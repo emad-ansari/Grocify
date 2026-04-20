@@ -1,13 +1,14 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { db } from "./db/client";
 import { groceryItems } from "./db/schema";
 
 // fetch grocery items
-export const listGroceryItems = async () => {
+export const listGroceryItems = async (userId: string) => {
 	const rows = await db
 		.select()
 		.from(groceryItems)
-		.orderBy(desc(groceryItems.updated_at));
+		.orderBy(desc(groceryItems.updated_at))
+		.where(eq(groceryItems.userId, userId));
 	return rows;
 };
 
@@ -17,6 +18,7 @@ export const createGroceryItem = async (input: {
 	category: string;
 	quantity: number;
 	priority: string;
+	userId: string;
 }) => {
 	const rows = await db
 		.insert(groceryItems)
@@ -28,6 +30,7 @@ export const createGroceryItem = async (input: {
 			purchased: false,
 			priority: input.priority,
 			updated_at: Date.now(),
+			userId: input.userId,
 		})
 		.returning();
 
@@ -38,11 +41,17 @@ export const createGroceryItem = async (input: {
 export const setGroceryItemPurchased = async (
 	id: string,
 	purchased: boolean,
+	userId: string,
 ) => {
 	const rows = await db
 		.update(groceryItems)
 		.set({ purchased, updated_at: Date.now() })
-		.where(eq(groceryItems.id, id))
+		.where(
+			and(
+				eq(groceryItems.id, id),
+				eq(groceryItems.userId, userId), // 🔥 second condition
+			),
+		)
 		.returning();
 
 	if (!rows.length) return null;
@@ -54,6 +63,7 @@ export const setGroceryItemPurchased = async (
 export const updateGroceryItemQuantity = async (
 	id: string,
 	quantity: number,
+	userId: string,
 ) => {
 	const rows = await db
 		.update(groceryItems)
@@ -61,7 +71,12 @@ export const updateGroceryItemQuantity = async (
 			quantity: Math.max(1, Math.floor(quantity)),
 			updated_at: Date.now(),
 		})
-		.where(eq(groceryItems.id, id))
+		.where(
+			and(
+				eq(groceryItems.id, id),
+				eq(groceryItems.userId, userId), // 🔥 second condition
+			),
+		)
 		.returning();
 
 	if (!rows.length) return null;
@@ -69,11 +84,23 @@ export const updateGroceryItemQuantity = async (
 };
 
 // delete grocery item
-export const deleteGroceryItem = async (id: string) => {
-    await db.delete(groceryItems).where(eq(groceryItems.id, id))
-}
+export const deleteGroceryItem = async (id: string, userId: string) => {
+	await db.delete(groceryItems).where(
+		and(
+			eq(groceryItems.id, id),
+			eq(groceryItems.userId, userId), // 🔥 second condition
+		),
+	);
+};
 
 // clear all purchased item
-export const clearPurchasedItems = async () => {
-    await db.delete(groceryItems).where(eq(groceryItems.purchased, true))
-}
+export const clearPurchasedItems = async (userId: string) => {
+	await db
+		.delete(groceryItems)
+		.where(
+			and(
+				eq(groceryItems.purchased, true),
+				eq(groceryItems.userId, userId),
+			),
+		);
+};

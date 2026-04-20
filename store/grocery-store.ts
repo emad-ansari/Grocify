@@ -6,7 +6,7 @@ export type GroceryCategory =
 	| "Bakery"
 	| "Pantry"
 	| "Snacks"
-	| "Meat"
+	| "Meat";
 export type GroceryPriority = "low" | "medium" | "high";
 
 export interface GroceryItem {
@@ -36,22 +36,33 @@ interface GroceryStore {
 	items: GroceryItem[];
 	isLoading: boolean;
 	error: string | null;
-	loadItems: () => Promise<void>;
-	addItem: (input: CreateItemInput) => Promise<GroceryItem | void>;
-	updateQuantity: (id: string, quantity: number) => Promise<void>;
-	togglePurchased: (id: string) => Promise<void>;
-	removeItem: (id: string) => Promise<void>;
-	clearPurchased: () => Promise<void>;
+	loadItems: (token: string) => Promise<void>;
+	addItem: (
+		input: CreateItemInput,
+		token: string,
+	) => Promise<GroceryItem | void>;
+	updateQuantity: (
+		id: string,
+		quantity: number,
+		token: string,
+	) => Promise<void>;
+	togglePurchased: (id: string, token: string) => Promise<void>;
+	removeItem: (id: string, token: string) => Promise<void>;
+	clearPurchased: (token: string) => Promise<void>;
 }
 
 export const useGroceryStore = create<GroceryStore>((set, get) => ({
 	items: [],
 	isLoading: false,
 	error: null,
-	loadItems: async () => {
+	loadItems: async (token: string) => {
 		set({ isLoading: true, error: null });
 		try {
-			const res = await fetch("/api/items");
+			const res = await fetch("/api/items", {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 			const payload = (await res.json()) as ItemsResponse;
 
 			if (!res.ok) throw new Error(`Request failed (${res.status})`);
@@ -64,14 +75,16 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 			set({ isLoading: false });
 		}
 	},
-	addItem: async (input) => {
+	addItem: async (input, token) => {
 		set({ isLoading: true, error: null });
+		console.log("token: ", token);
 
 		try {
 			const res = await fetch("/api/items", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
 				},
 				body: JSON.stringify({
 					name: input.name,
@@ -95,7 +108,7 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 			set({ isLoading: false, error: null });
 		}
 	},
-	updateQuantity: async (id, quantity) => {
+	updateQuantity: async (id, quantity, token) => {
 		set({ error: null });
 		const nextQuantity = Math.max(1, quantity);
 
@@ -104,6 +117,7 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
 				},
 				body: JSON.stringify({ quantity: nextQuantity }),
 			});
@@ -125,7 +139,7 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 			set({ error: "Something went wrong" });
 		}
 	},
-	togglePurchased: async (id) => {
+	togglePurchased: async (id, token: string) => {
 		const currentItem = get().items.find((item) => item.id === id);
 		if (!currentItem) return;
 
@@ -137,6 +151,7 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
 				},
 				body: JSON.stringify({ purchased: nextPurchased }),
 			});
@@ -158,12 +173,15 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 			set({ error: "Something went wrong" });
 		}
 	},
-	removeItem: async (id) => {
+	removeItem: async (id, token: string) => {
 		set({ error: null });
 
 		try {
 			const res = await fetch(`/api/items/${id}`, {
 				method: "DELETE",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
 			});
 
 			if (!res.ok) {
@@ -180,12 +198,15 @@ export const useGroceryStore = create<GroceryStore>((set, get) => ({
 			set({ error: "Something went wrong" });
 		}
 	},
-	clearPurchased: async () => {
+	clearPurchased: async (token: string) => {
 		set({ error: null, isLoading: true });
 
 		try {
 			const res = await fetch("/api/items/clear-purchased", {
 				method: "POST",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
 			});
 
 			if (!res.ok) {

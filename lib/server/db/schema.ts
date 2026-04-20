@@ -8,6 +8,8 @@ export const groceryItems = pgTable("grocery_items", {
 	purchased: boolean("purchased").notNull().default(false),
 	priority: text("priority").notNull().default("medium"),
 	updated_at: bigint("updated_at", { mode: "number" }).notNull(),
+
+	userId: text("userId").notNull()
 });
 
 

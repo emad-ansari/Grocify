@@ -1,15 +1,29 @@
 import { useGroceryStore } from "@/store/grocery-store";
+import { useAuth } from "@clerk/expo";
 import { FontAwesome6 } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 
 const CompletedItems = () => {
+	const { getToken } = useAuth();
 	const { removeItem, togglePurchased, items, isLoading } = useGroceryStore();
 	const completedItems = items.filter((item) => item.purchased);
 
 	if (!completedItems.length || isLoading) return null;
 
+	const onPress = async (
+		operation: "toggle_purchased" | "remove_item",
+		itemId: string,
+	) => {
+		const token = await getToken();
+		if (!token) return;
 
+		if (operation === "toggle_purchased") {
+			await togglePurchased(itemId, token);
+		} else {
+			await removeItem(itemId, token);
+		}
+	};
 
 	return (
 		<View className="mt-3 rounded-3xl border border-border bg-secondary p-4">
@@ -25,7 +39,7 @@ const CompletedItems = () => {
 					<View className="flex-row items-center gap-2">
 						<Pressable
 							className="w-6 h-6 items-center justify-center rounded-full bg-primary"
-							onPress={async () => await togglePurchased(item.id)}
+							onPress={() => onPress("toggle_purchased", item.id)}
 						>
 							<FontAwesome6
 								name="check"
@@ -40,7 +54,7 @@ const CompletedItems = () => {
 
 					<Pressable
 						className="w-8 h-8 items-center justify-center rounded-xl bg-destructive"
-						onPress={() => removeItem(item.id)}
+						onPress={() => onPress("remove_item", item.id)}
 					>
 						<FontAwesome6 name="trash" size={12} color="#d45f58" />
 					</Pressable>
