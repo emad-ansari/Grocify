@@ -1,50 +1,92 @@
-# Welcome to your Expo app 👋
+# Grocify 🛒
+### Plan smarter, shop calmer.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Grocify is a modern, high-performance grocery management application built with Expo and React Native. It helps users organize their shopping lists, gain insights into their spending habits, and plan their grocery runs with ease.
 
-## Get started
+---
 
-1. Install dependencies
+## 📱 App Screens
 
+<p align="center">
+  <img src="assets/screens/login-screen.png" width="22%" />
+  <img src="assets/screens/item-list-screen.png" width="22%" />
+  <img src="assets/screens/planner-screen.png" width="22%" />
+  <img src="assets/screens/insights-screen.png" width="22%" />
+</p>
+
+---
+
+## ✨ Key Features
+
+- **✅ Smart Shopping List**: Real-time management of pending and completed grocery items. Stay organized while you shop.
+- **📊 Detailed Insights**: Visual analytics to track your spending habits, most purchased categories, and priority levels.
+- **📝 Grocery Planner**: Effortlessly plan your next run by adding items with specific quantities, categories, and priority (Low, Medium, High).
+- **🔐 Secure Authentication**: Integrated with **Clerk** for robust, hassle-free authentication including SSO/Google support.
+- **☁️ Cloud Sync**: Powered by **Drizzle ORM** and **Neon (PostgreSQL)**, ensuring your data is always safe and synced across devices.
+- **🎨 Premium UI/UX**: A clean, modern interface styled with **NativeWind** (Tailwind CSS) for a smooth and responsive experience.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Expo](https://expo.dev/) (React Native)
+- **Styling**: [NativeWind](https://www.nativewind.dev/) (Tailwind CSS)
+- **Authentication**: [Clerk](https://clerk.com/)
+- **Database**: [Drizzle ORM](https://orm.drizzle.team/) with [Neon](https://neon.tech/) (PostgreSQL)
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+- **Animations**: [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/)
+- **Icons**: [Expo Vector Icons](https://docs.expo.dev/guides/icons/)
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (LTS)
+- npm or yarn
+- [Expo Go](https://expo.dev/go) app (for mobile testing)
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/grocify.git
+   cd grocify
+   ```
+
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Configure Environment Variables:**
+   Create a `.env` file in the root directory and add your Clerk and Neon DB credentials (refer to `.env.example` if available).
 
+4. **Run the application:**
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 📂 Project Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- `app/`: Expo Router file-based navigation.
+  - `(auth)/`: Authentication screens (Sign-in, SSO).
+  - `(tabs)/`: Main application tabs (Shopping List, Insights, Planner).
+- `components/`: Reusable UI components organized by feature.
+- `store/`: Zustand state management (Grocery Store).
+- `lib/`: Database configuration and schema definitions.
+- `assets/`: Media files including icons and screenshots.
+- `hooks/`: Custom React hooks for application logic.
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## 🤝 Contributing
 
-```bash
-npm run reset-project
-```
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 📄 License
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
