@@ -31,7 +31,9 @@ interface ItemsResponse {
 interface ItemResponse {
 	item: GroceryItem;
 }
-
+// #16271e
+// #253c30
+// #f4fbf6
 interface GroceryStore {
 	items: GroceryItem[];
 	isLoading: boolean;
